@@ -14,14 +14,33 @@ else:
     genai = None
     Client = None
 
-# ================== CONFIG ==================
-USERNAME = "idk_yahia_"
-PASSWORD = "yahya200901"
-GEMINI_API_KEY = "AIzaSyBWmZkq5mTn7KabPsBtpR8e9NeXciwbM-o"
-PHONE_NUMBER = "01228768422"
+# ================== CONFIG (from environment) ==================
+# Sensitive values are read from environment variables to avoid hardcoding.
+# Set IG_USERNAME, IG_PASSWORD, GEMINI_API_KEY, PHONE_NUMBER in your environment.
+USERNAME = os.environ.get("IG_USERNAME")
+PASSWORD = os.environ.get("IG_PASSWORD")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+# PHONE_NUMBER is optional but recommended to set as env var
+PHONE_NUMBER = os.environ.get("PHONE_NUMBER", "")
+
+# Non-sensitive defaults
 IS_CLOSED = True
-OWNER_NAME = "يحيى"
-SIGNATURE = "— يحيى صاحب الاكونت"
+OWNER_NAME = os.environ.get("OWNER_NAME", "يحيى")
+SIGNATURE = os.environ.get("SIGNATURE", f"— {OWNER_NAME} صاحب الاكونت")
+
+# If running in real mode (not TEST_MODE), require the essential secrets
+if not TEST_MODE:
+    missing = []
+    if not USERNAME:
+        missing.append('IG_USERNAME')
+    if not PASSWORD:
+        missing.append('IG_PASSWORD')
+    if not GEMINI_API_KEY:
+        missing.append('GEMINI_API_KEY')
+    if missing:
+        print("⚠️ مفقود متغيرات بيئة مطلوبة:", ",".join(missing))
+        print("ضع المتغيرات في البيئة ثم أعد تشغيل البرنامج أو شغّل TEST_MODE=1 للاختبار.")
+        sys.exit(1)
 
 # ================== GEMINI SETUP ==================
 if not TEST_MODE:
