@@ -52,14 +52,23 @@ else:
 
 # ================== LOGIN ==================
 def login_insta():
+    global TEST_MODE, cl
+    if TEST_MODE:
+        print("⚠️ تشغيل في TEST_MODE — تخطي تسجيل الدخول لاختبارات محلية")
+        return
+
     try:
         if os.path.exists("n0x_session.json"):
             cl.load_settings("n0x_session.json")
         cl.login(USERNAME, PASSWORD)
         cl.dump_settings("n0x_session.json")
         print("🚀 n0x دخل الساحه")
-    except:
-        cl.login(USERNAME, PASSWORD)
+    except Exception as e:
+        print("⚠️ فشل تسجيل الدخول إلى انستاجرام:", e)
+        print("سأحول البرنامج إلى TEST_MODE لتجنب محاولة الاتصال.")
+        TEST_MODE = True
+        cl = None
+        return
 
 # ================== ANTI SPAM ==================
 def should_reply(user_id):
