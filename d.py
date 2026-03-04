@@ -1,6 +1,7 @@
 import time
 import random
 import os
+import sys
 from datetime import datetime
 
 # Allow running lightweight tests without installing external deps
@@ -52,7 +53,6 @@ else:
 
 # ================== LOGIN ==================
 def login_insta():
-    global TEST_MODE, cl
     if TEST_MODE:
         print("⚠️ تشغيل في TEST_MODE — تخطي تسجيل الدخول لاختبارات محلية")
         return
@@ -65,10 +65,8 @@ def login_insta():
         print("🚀 n0x دخل الساحه")
     except Exception as e:
         print("⚠️ فشل تسجيل الدخول إلى انستاجرام:", e)
-        print("سأحول البرنامج إلى TEST_MODE لتجنب محاولة الاتصال.")
-        TEST_MODE = True
-        cl = None
-        return
+        print("أوقف التشغيل الآن: رجاءً تحقق من `USERNAME` و`PASSWORD` أو شغّل `TEST_MODE` إذا أردت محاكاة.")
+        sys.exit(1)
 
 # ================== ANTI SPAM ==================
 def should_reply(user_id):
