@@ -164,6 +164,12 @@ def get_n0x_reply(user_id, user_message):
 """
 
     try:
+        # If running in TEST_MODE or model isn't available, return a simple canned reply
+        if TEST_MODE or model is None:
+            simulated = f"{sal} نسخة اختبارية: وصلت رسالتك — \"{user_message}\"\n{SIGNATURE}"
+            if "مين" in user_lower or "من انت" in user_lower or "مين صاحب" in user_lower:
+                simulated = simulated + f"\n{SIGNATURE}"
+            return simulated
         # If account is closed, give a creative 'قافل' reply and include owner signature
         closed_keywords = ["متاح", "متاحة", "تقدر", "available", "online", "متكلم", "تكلم", "هل انت"]
         if IS_CLOSED and any(k in user_lower for k in closed_keywords):
