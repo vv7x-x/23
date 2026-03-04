@@ -216,6 +216,23 @@ def get_n0x_reply(user_id, user_message):
 # ================== MAIN LOOP ==================
 def run_n0x():
     login_insta()
+    # If running in TEST_MODE or Instagram client isn't available, run a local simulation
+    if TEST_MODE or cl is None:
+        print("👀 تشغيل في TEST_MODE — محاكاة الدايركت محليًا (لا يوجد اتصال انستاجرام)")
+        samples = [
+            ("user_1", "ممكن نتكلم؟"),
+            ("user_2", "هات رقمك واتس"),
+            ("user_3", "مين صاحب الحساب؟")
+        ]
+        for uid, text in samples:
+            print(f"\n📩 [SIM] رسالة من {uid}")
+            print("💬", text)
+            reply = get_n0x_reply(uid, text)
+            print("📤 رد n0x:", reply)
+            time.sleep(1)
+        print("✅ محاكاة انتهت — الخروج من البرنامج.")
+        return
+
     print("👀 n0x بيراقب الدايركت...")
 
     while True:
