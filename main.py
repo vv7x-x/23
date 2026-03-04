@@ -49,11 +49,29 @@ def receive_message():
     Expected JSON: {"user_id": str, "from_id": str, "text": str}
     """
     data = request.get_json(force=True)
+    reply, status = _process_incoming_payload(data)
+    return jsonify(reply), status
+
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    """Compatibility endpoint for platforms expecting /webhook.
+    Forwards payload to same processor as `/receive_message`.
+    """
+    data = request.get_json(force=True)
+    reply, status = _process_incoming_payload(data)
+    return jsonify(reply), status
+
+
+def _process_incoming_payload(data: dict):
+    """Process an incoming message payload and return (response_obj, status_code).
+    Expected keys: user_id, from_id, text
+    """
     user_id = data.get("user_id")
     from_id = data.get("from_id")
     text = (data.get("text") or "").strip()
     if not user_id or not from_id or text == "":
-        return jsonify({"error": "Missing fields"}), 400
+        return {"error": "Missing fields"}, 400
 
     # Save incoming message
     memory.save_message(user_id, from_id, text, sender="other")
@@ -63,7 +81,7 @@ def receive_message():
         reply = responder.handle_spam(user_id, from_id)
         simulate_typing_delay(reply)
         memory.save_message(user_id, from_id, reply, sender="owner")
-        return jsonify({"reply": reply})
+        return {"reply": reply}, 200
 
     # Intent detection (rule-based)
     detected = intent.detect(text)
@@ -74,7 +92,7 @@ def receive_message():
         reply = responder.handle_whatsapp_request(user_id, from_id, cnt)
         simulate_typing_delay(reply)
         memory.save_message(user_id, from_id, reply, sender="owner")
-        return jsonify({"reply": reply})
+        return {"reply": reply}, 200
 
     # Possibly recalc style if thresholds met
     style.maybe_recalculate(user_id)
@@ -89,7 +107,7 @@ def receive_message():
     # Save owner's outgoing message
     memory.save_message(user_id, from_id, reply, sender="owner")
 
-    return jsonify({"reply": reply})
+    return {"reply": reply}, 200
 
 
 @app.route("/ingest_owner_message", methods=["POST"])
