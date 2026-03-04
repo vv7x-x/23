@@ -1,6 +1,7 @@
 Flask==2.3.2
-instagrapi==1.23.8
-requests==2.31.0
+# Use a compatible instagrapi range; pin to a series available on PyPI
+instagrapi>=1.16.0,<2.0.0
+requests>=2.31.0,<3.0.0
 google-generativeai
 instagrapi
 
